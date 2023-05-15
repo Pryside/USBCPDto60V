@@ -1,0 +1,14 @@
+drp1m1_bus.c:222:26:MX_I2C_Init	4
+drp1m1_bus.c:269:9:BSP_I2C_Init	4
+drp1m1_bus.c:298:9:BSP_I2C_DeInit	2
+drp1m1_bus.c:321:9:BSP_I2C_IsReady	2
+drp1m1_bus.c:345:9:BSP_I2C_WriteReg	3
+drp1m1_bus.c:377:9:BSP_I2C_ReadReg	3
+drp1m1_bus.c:409:9:BSP_I2C_WriteReg16	3
+drp1m1_bus.c:441:9:BSP_I2C_ReadReg16	3
+drp1m1_bus.c:530:9:BSP_GetTick	1
+drp1m1_bus.c:548:13:I2C_MspInit	1
+drp1m1_bus.c:593:13:I2C_MspDeInit	1
+drp1m1_bus.c:621:17:I2C_GetTiming	7
+drp1m1_bus.c:660:13:Compute_PRESC_SCLDEL_SDADEL	9
+drp1m1_bus.c:732:17:Compute_SCLL_SCLH	12

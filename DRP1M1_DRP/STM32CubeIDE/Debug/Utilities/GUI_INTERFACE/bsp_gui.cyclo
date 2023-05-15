@@ -1,0 +1,7 @@
+bsp_gui.c:62:19:BSP_GUI_LoadDataFromFlash	5
+bsp_gui.c:198:19:BSP_GUI_EraseDataInFlash	3
+bsp_gui.c:261:19:BSP_GUI_SaveDataInFlash	13
+bsp_gui.c:446:26:SavePDOInFlash	5
+bsp_gui.c:534:26:SaveSettingsInFlash	6
+bsp_gui.c:638:26:LoadPDOFromFlash	2
+bsp_gui.c:657:26:LoadSettingsFromFlash	1
