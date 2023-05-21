@@ -16,4 +16,4 @@
 **/STM32CubeIDE/**/Drivers/
 **/STM32CubeIDE/**/Example/
 **/STM32CubeIDE/**/.settings/
-*/.metadata/*
+.metadata/
