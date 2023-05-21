@@ -71,7 +71,11 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define VDDA_APPLI 3300
-#define VCC_PIN_Pin LL_GPIO_PIN_10
+#define USRBTN_Pin GPIO_PIN_13
+#define USRBTN_GPIO_Port GPIOC
+#define LED2_Pin GPIO_PIN_5
+#define LED2_GPIO_Port GPIOA
+#define VCC_PIN_Pin GPIO_PIN_10
 #define VCC_PIN_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */

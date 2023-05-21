@@ -163,9 +163,6 @@
               <name>Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_ll_exti.c</name>
             </file>
             <file>
-              <name>Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_ll_gpio.c</name>
-            </file>
-            <file>
               <name>Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_hal.c</name>
             </file>
             <file>
@@ -215,6 +212,9 @@
             </file>
             <file>
               <name>Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_ll_rcc.c</name>
+            </file>
+            <file>
+              <name>Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_ll_gpio.c</name>
             </file>
             <file>
               <name>Drivers\STM32G4xx_HAL_Driver\Src\stm32g4xx_ll_dma.c</name>
