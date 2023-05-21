@@ -1,7 +1,0 @@
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:62:19:BSP_GUI_LoadDataFromFlash	32	static
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:198:19:BSP_GUI_EraseDataInFlash	32	static,ignoring_inline_asm
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:261:19:BSP_GUI_SaveDataInFlash	112	static,ignoring_inline_asm
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:446:26:SavePDOInFlash	72	static
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:534:26:SaveSettingsInFlash	80	static
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:638:26:LoadPDOFromFlash	32	static
-C:/Users/prysi/Documents/STM32/x-cube-tcpp-main/Utilities/GUI_INTERFACE/bsp_gui.c:657:26:LoadSettingsFromFlash	32	static

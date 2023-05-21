@@ -1,3 +1,0 @@
-usbpd.c:44:6:MX_USBPD_Init	4
-usbpd.c:85:23:BSP_GetBoardName	1
-usbpd.c:94:23:BSP_GetBoardID	1
