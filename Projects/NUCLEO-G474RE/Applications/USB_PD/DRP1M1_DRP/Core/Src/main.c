@@ -33,6 +33,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DT_RISING 750
+#define DT_FALLING 750
+#define DT_PERIOD 48000 //results in 100khz
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -60,6 +63,7 @@ void StartDefaultTask(void const * argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -96,6 +100,7 @@ int main(void)
   HAL_HRTIM_WaveformOutputStart(&hhrtim1, HRTIM_OUTPUT_TC1 | HRTIM_OUTPUT_TC2 | HRTIM_OUTPUT_TD1 | HRTIM_OUTPUT_TD2); // Start PWM on TC1, TC2, TD1, and TD2
 
   HAL_HRTIM_WaveformCounterStart(&hhrtim1, HRTIM_TIMERID_TIMER_C | HRTIM_TIMERID_TIMER_D); // Start the counters for timers C and D
+
 
 
   /* USER CODE END 2 */
@@ -152,8 +157,8 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-  LL_FLASH_SetLatency(LL_FLASH_LATENCY_1);
-  while(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_1)
+  LL_FLASH_SetLatency(LL_FLASH_LATENCY_4);
+  while(LL_FLASH_GetLatency() != LL_FLASH_LATENCY_4)
   {
   }
   LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
@@ -170,7 +175,7 @@ void SystemClock_Config(void)
   {
   }
 
-  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_1, 8, LL_RCC_PLLR_DIV_2);
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_4, 75, LL_RCC_PLLR_DIV_2);
   LL_RCC_PLL_EnableDomain_SYS();
   LL_RCC_PLL_Enable();
    /* Wait till PLL is ready */
@@ -179,6 +184,7 @@ void SystemClock_Config(void)
   }
 
   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_2);
    /* Wait till System clock is ready */
   while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL)
   {
@@ -191,7 +197,7 @@ void SystemClock_Config(void)
   LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
-  LL_SetSystemCoreClock(60000000);
+  LL_SetSystemCoreClock(150000000);
 
    /* Update the time base */
   if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
@@ -215,6 +221,8 @@ static void MX_HRTIM1_Init(void)
   HRTIM_TimeBaseCfgTypeDef pTimeBaseCfg = {0};
   HRTIM_TimerCtlTypeDef pTimerCtl = {0};
   HRTIM_TimerCfgTypeDef pTimerCfg = {0};
+  HRTIM_CompareCfgTypeDef pCompareCfg = {0};
+  HRTIM_DeadTimeCfgTypeDef pDeadTimeCfg = {0};
   HRTIM_OutputCfgTypeDef pOutputCfg = {0};
 
   /* USER CODE BEGIN HRTIM1_Init 1 */
@@ -235,7 +243,7 @@ static void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
-  pTimeBaseCfg.Period = 0xFFDF;
+  pTimeBaseCfg.Period = 48000;
   pTimeBaseCfg.RepetitionCounter = 0x00;
   pTimeBaseCfg.PrescalerRatio = HRTIM_PRESCALERRATIO_MUL32;
   pTimeBaseCfg.Mode = HRTIM_MODE_CONTINUOUS;
@@ -244,6 +252,7 @@ static void MX_HRTIM1_Init(void)
     Error_Handler();
   }
   pTimerCtl.UpDownMode = HRTIM_TIMERUPDOWNMODE_UP;
+  pTimerCtl.TrigHalf = HRTIM_TIMERTRIGHALF_DISABLED;
   pTimerCtl.DualChannelDacEnable = HRTIM_TIMER_DCDE_DISABLED;
   if (HAL_HRTIM_WaveformTimerControl(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, &pTimerCtl) != HAL_OK)
   {
@@ -266,7 +275,7 @@ static void MX_HRTIM1_Init(void)
   pTimerCfg.PushPull = HRTIM_TIMPUSHPULLMODE_DISABLED;
   pTimerCfg.FaultEnable = HRTIM_TIMFAULTENABLE_NONE;
   pTimerCfg.FaultLock = HRTIM_TIMFAULTLOCK_READWRITE;
-  pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_DISABLED;
+  pTimerCfg.DeadTimeInsertion = HRTIM_TIMDEADTIMEINSERTION_ENABLED;
   pTimerCfg.DelayedProtectionMode = HRTIM_TIMER_A_B_C_DELAYEDPROTECTION_DISABLED;
   pTimerCfg.UpdateTrigger = HRTIM_TIMUPDATETRIGGER_NONE;
   pTimerCfg.ResetTrigger = HRTIM_TIMRESETTRIGGER_NONE;
@@ -281,9 +290,34 @@ static void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
+  pCompareCfg.CompareValue = 0xFFDF;
+  pCompareCfg.AutoDelayedMode = HRTIM_AUTODELAYEDMODE_REGULAR;
+  pCompareCfg.AutoDelayedTimeout = 0x0000;
+
+  if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, HRTIM_COMPAREUNIT_2, &pCompareCfg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  pDeadTimeCfg.Prescaler = HRTIM_TIMDEADTIME_PRESCALERRATIO_MUL8;
+  pDeadTimeCfg.RisingValue = DT_RISING;
+  pDeadTimeCfg.RisingSign = HRTIM_TIMDEADTIME_RISINGSIGN_POSITIVE;
+  pDeadTimeCfg.RisingLock = HRTIM_TIMDEADTIME_RISINGLOCK_WRITE;
+  pDeadTimeCfg.RisingSignLock = HRTIM_TIMDEADTIME_RISINGSIGNLOCK_READONLY;
+  pDeadTimeCfg.FallingValue = DT_FALLING;
+  pDeadTimeCfg.FallingSign = HRTIM_TIMDEADTIME_FALLINGSIGN_POSITIVE;
+  pDeadTimeCfg.FallingLock = HRTIM_TIMDEADTIME_FALLINGLOCK_WRITE;
+  pDeadTimeCfg.FallingSignLock = HRTIM_TIMDEADTIME_FALLINGSIGNLOCK_READONLY;
+  if (HAL_HRTIM_DeadTimeConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, &pDeadTimeCfg) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_HRTIM_DeadTimeConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_D, &pDeadTimeCfg) != HAL_OK)
+  {
+    Error_Handler();
+  }
   pOutputCfg.Polarity = HRTIM_OUTPUTPOLARITY_HIGH;
-  pOutputCfg.SetSource = HRTIM_OUTPUTSET_NONE;
-  pOutputCfg.ResetSource = HRTIM_OUTPUTRESET_NONE;
+  pOutputCfg.SetSource = HRTIM_OUTPUTSET_TIMPER;
+  pOutputCfg.ResetSource = HRTIM_OUTPUTRESET_TIMCMP2;
   pOutputCfg.IdleMode = HRTIM_OUTPUTIDLEMODE_NONE;
   pOutputCfg.IdleLevel = HRTIM_OUTPUTIDLELEVEL_INACTIVE;
   pOutputCfg.FaultLevel = HRTIM_OUTPUTFAULTLEVEL_NONE;
@@ -297,6 +331,8 @@ static void MX_HRTIM1_Init(void)
   {
     Error_Handler();
   }
+  pOutputCfg.SetSource = HRTIM_OUTPUTSET_NONE;
+  pOutputCfg.ResetSource = HRTIM_OUTPUTRESET_TIMPER;
   if (HAL_HRTIM_WaveformOutputConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, HRTIM_OUTPUT_TC2, &pOutputCfg) != HAL_OK)
   {
     Error_Handler();
@@ -310,6 +346,11 @@ static void MX_HRTIM1_Init(void)
     Error_Handler();
   }
   if (HAL_HRTIM_WaveformTimerControl(&hhrtim1, HRTIM_TIMERINDEX_TIMER_D, &pTimerCtl) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  if (HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_D, HRTIM_COMPAREUNIT_2, &pCompareCfg) != HAL_OK)
   {
     Error_Handler();
   }
@@ -368,6 +409,7 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -385,20 +427,24 @@ void StartDefaultTask(void const * argument)
   {
 	  HRTIM_CompareCfgTypeDef CompareCfgC;
 	  /* Configure the compare unit */
-	  CompareCfgC.CompareValue = 500; // set your desired duty cycle
+	  CompareCfgC.CompareValue = 20000; // set your desired duty cycle of 48000
 	  CompareCfgC.AutoDelayedMode = HRTIM_AUTODELAYEDMODE_REGULAR;
 	  CompareCfgC.AutoDelayedTimeout = 0;
 
 	  HRTIM_CompareCfgTypeDef CompareCfgD;
 	  /* Configure the compare unit */
-	  CompareCfgD.CompareValue = 500; // set your desired duty cycle
+	  CompareCfgD.CompareValue = 30000; // set your desired duty cycle of 48000
 	  CompareCfgD.AutoDelayedMode = HRTIM_AUTODELAYEDMODE_REGULAR;
 	  CompareCfgD.AutoDelayedTimeout = 0;
 
-	  HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, HRTIM_COMPAREUNIT_1, &CompareCfgC); // for TC1
+
+	  //HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, HRTIM_COMPAREUNIT_1, &CompareCfgC); // for TC1
 	  HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_C, HRTIM_COMPAREUNIT_2, &CompareCfgC); // for TC2
-	  HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_D, HRTIM_COMPAREUNIT_1, &CompareCfgD); // for TD1
+	  //HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_D, HRTIM_COMPAREUNIT_1, &CompareCfgD); // for TD1
 	  HAL_HRTIM_WaveformCompareConfig(&hhrtim1, HRTIM_TIMERINDEX_TIMER_D, HRTIM_COMPAREUNIT_2, &CompareCfgD); // for TD2
+	  //TODO find a way to set both to 0
+	  //figure out how to read ADC readings
+
 
 
 
